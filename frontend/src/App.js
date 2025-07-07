@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+const BACKEND_URL = ProcessingInstruction.env.BACKEND_URL;
+
 const languages = ["python", "java", "cpp"];
 
 export default function DifferentialTester() {
@@ -15,7 +17,7 @@ export default function DifferentialTester() {
     setLoading(true);
     setResult(null);
     try {
-      const res = await fetch("/api/run", {
+      const res = await fetch(`${BACKEND_URL}/api/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
