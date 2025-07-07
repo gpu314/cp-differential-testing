@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/cp-differential-testing/static/css/main.e6c13ad2.css",
+    "main.js": "/cp-differential-testing/static/js/main.7b04a4e8.js",
+    "static/js/453.670e15c7.chunk.js": "/cp-differential-testing/static/js/453.670e15c7.chunk.js",
+    "index.html": "/cp-differential-testing/index.html",
+    "main.e6c13ad2.css.map": "/cp-differential-testing/static/css/main.e6c13ad2.css.map",
+    "main.7b04a4e8.js.map": "/cp-differential-testing/static/js/main.7b04a4e8.js.map",
+    "453.670e15c7.chunk.js.map": "/cp-differential-testing/static/js/453.670e15c7.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.7b04a4e8.js"
+  ]
+}
