@@ -10,8 +10,13 @@ from groq import Groq
 app = Flask(__name__)
 CORS(app)
 
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+if GROQ_API_KEY is None:
+    raise EnvironmentError("bruh")
+
 client = Groq(
-    api_key=os.getenv("GROQ_API_KEY"),
+    api_key=GROQ_API_KEY,
 )
 
 NUM_TESTS = 100
