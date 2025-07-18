@@ -2,13 +2,17 @@ import os
 import random
 import subprocess
 import tempfile
+import re
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from groq import Groq
 
 app = Flask(__name__)
 CORS(app)
 
-NUM_TESTS = 100
+client = Groq(
+    api_key=os.environ.get("GROQ_API_KEY"),
+)
 
 # def generate_test_case():
 #     quarters = random.randint(1, 99)
@@ -17,8 +21,35 @@ NUM_TESTS = 100
 #     m3 = random.randint(0, 9)
 #     return f"{quarters}\n{m1}\n{m2}\n{m3}\n"
 
-def generate_test_case():
-    return f"{random.randint(1, 99)}\n"
+def prompt_for_generate_test_case(specification):
+    prompt = f"""Generate a Python function called `generate_test_case()` that uses the `random` module to generate a random input based on this input specification:
+
+\"\"\"
+{specification}
+\"\"\"
+
+Only return the Python code (no explanations, no markdown). The function should return a string representing the full input, suitable for writing to a file or printing.
+"""
+    response = client.chat.completions.create(
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a Python coding assistant."
+            },
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+        model="llama-3.3-70b-versatile",
+    )
+
+    return response.choices[0].message.content
+
+
+def generate_test_case(code):
+    run_python(code, None)
+
 
 def run_python(code, input_str):
     with tempfile.NamedTemporaryFile("w+", suffix=".py", delete=False) as f:
@@ -27,14 +58,13 @@ def run_python(code, input_str):
         path = f.name
 
     try:
-        result = subprocess.run(["python3", path], input=input_str, text=True, capture_output=True, timeout=5)
+        result = subprocess.run(
+            ["python3", path], input=input_str, text=True, capture_output=True, timeout=5)
         return result.stdout.strip(), result.stderr.strip()
     except subprocess.TimeoutExpired:
         return "", "Python code timed out"
     finally:
         os.remove(path)
-
-import re
 
 def java_class_name(code):
     match = re.search(r'public\s+class\s+([A-Za-z_][A-Za-z0-9_]*)', code)
@@ -72,6 +102,7 @@ def run_java(code, input_str):
         except subprocess.TimeoutExpired:
             return "", "Java code timed out"
 
+
 def run_cpp(code, input_str):
     with tempfile.TemporaryDirectory() as temp_dir:
         cpp_file = os.path.join(temp_dir, "solution.cpp")
@@ -100,10 +131,12 @@ def run_cpp(code, input_str):
         except subprocess.TimeoutExpired:
             return "", "C++ code timed out"
 
+
 @app.route("/api/run", methods=["POST"])
 def run_differential_test():
-    try: 
+    try:
         data = request.json
+        input_specification = data.get("inputSpec")
         slow_lang = data.get("slowLang")
         fast_lang = data.get("fastLang")
         slow_code = data.get("slowCode")
@@ -113,7 +146,8 @@ def run_differential_test():
             return jsonify({"error": "Both code inputs are required"}), 400
 
         for i in range(1, NUM_TESTS + 1):
-            test_input = generate_test_case()
+            test_input = generate_test_case(
+                prompt_for_generate_test_case(input_specification))
 
             # Run slow code
             if slow_lang == "python":
