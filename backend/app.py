@@ -41,10 +41,8 @@ Only return the Python code (no explanations, no markdown). The function should 
 
     return response.choices[0].message.content
 
-
 def generate_test_case(code):
-    run_python(code, None)
-
+    return run_python(code, None)
 
 def run_python(code, input_str):
     with tempfile.NamedTemporaryFile("w+", suffix=".py", delete=False) as f:
