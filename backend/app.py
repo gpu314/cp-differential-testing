@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app)
 
 client = Groq(
-    api_key=os.environ.get("GROQ_API_KEY"),
+    api_key=os.getenv("GROQ_API_KEY"),
 )
 
 NUM_TESTS = 100
