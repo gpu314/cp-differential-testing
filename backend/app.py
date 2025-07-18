@@ -102,61 +102,64 @@ def run_cpp(code, input_str):
 
 @app.route("/api/run", methods=["POST"])
 def run_differential_test():
-    data = request.json
-    slow_lang = data.get("slowLang")
-    fast_lang = data.get("fastLang")
-    slow_code = data.get("slowCode")
-    fast_code = data.get("fastCode")
+    try: 
+        data = request.json
+        slow_lang = data.get("slowLang")
+        fast_lang = data.get("fastLang")
+        slow_code = data.get("slowCode")
+        fast_code = data.get("fastCode")
 
-    if not (slow_code and fast_code):
-        return jsonify({"error": "Both code inputs are required"}), 400
+        if not (slow_code and fast_code):
+            return jsonify({"error": "Both code inputs are required"}), 400
 
-    for i in range(1, NUM_TESTS + 1):
-        test_input = generate_test_case()
+        for i in range(1, NUM_TESTS + 1):
+            test_input = generate_test_case()
 
-        # Run slow code
-        if slow_lang == "python":
-            slow_out, slow_err = run_python(slow_code, test_input)
-        elif slow_lang == "java":
-            slow_out, slow_err = run_java(slow_code, test_input)
-        elif slow_lang == "cpp":
-            slow_out, slow_err = run_cpp(slow_code, test_input)
-        else:
-            return jsonify({"error": f"Unsupported slow language: {slow_lang}"}), 400
+            # Run slow code
+            if slow_lang == "python":
+                slow_out, slow_err = run_python(slow_code, test_input)
+            elif slow_lang == "java":
+                slow_out, slow_err = run_java(slow_code, test_input)
+            elif slow_lang == "cpp":
+                slow_out, slow_err = run_cpp(slow_code, test_input)
+            else:
+                return jsonify({"error": f"Unsupported slow language: {slow_lang}"}), 400
 
-        # Run fast code
-        if fast_lang == "python":
-            fast_out, fast_err = run_python(fast_code, test_input)
-        elif fast_lang == "java":
-            fast_out, fast_err = run_java(fast_code, test_input)
-        elif fast_lang == "cpp":
-            fast_out, fast_err = run_cpp(fast_code, test_input)
-        else:
-            return jsonify({"error": f"Unsupported fast language: {fast_lang}"}), 400
+            # Run fast code
+            if fast_lang == "python":
+                fast_out, fast_err = run_python(fast_code, test_input)
+            elif fast_lang == "java":
+                fast_out, fast_err = run_java(fast_code, test_input)
+            elif fast_lang == "cpp":
+                fast_out, fast_err = run_cpp(fast_code, test_input)
+            else:
+                return jsonify({"error": f"Unsupported fast language: {fast_lang}"}), 400
 
-        if slow_err or fast_err:
-            return jsonify({
-                "match": False,
-                "test_number": i,
-                "test_input": test_input,
-                "slow_output": slow_out,
-                "fast_output": fast_out,
-                "slow_error": slow_err,
-                "fast_error": fast_err
-            })
+            if slow_err or fast_err:
+                return jsonify({
+                    "match": False,
+                    "test_number": i,
+                    "test_input": test_input,
+                    "slow_output": slow_out,
+                    "fast_output": fast_out,
+                    "slow_error": slow_err,
+                    "fast_error": fast_err
+                })
 
-        if slow_out != fast_out:
-            return jsonify({
-                "match": False,
-                "test_number": i,
-                "test_input": test_input,
-                "slow_output": slow_out,
-                "fast_output": fast_out,
-                "slow_error": slow_err,
-                "fast_error": fast_err
-            })
+            if slow_out != fast_out:
+                return jsonify({
+                    "match": False,
+                    "test_number": i,
+                    "test_input": test_input,
+                    "slow_output": slow_out,
+                    "fast_output": fast_out,
+                    "slow_error": slow_err,
+                    "fast_error": fast_err
+                })
 
-    return jsonify({"match": True, "message": f"All {NUM_TESTS} test cases matched!"})
+        return jsonify({"match": True, "message": f"All {NUM_TESTS} test cases matched!"})
+    except Exception as e:
+        return jsonify({"error": f"Server error {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
