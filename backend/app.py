@@ -51,6 +51,7 @@ Only return the Python code (no explanations, no markdown). The function should 
 def generate_test_case(code):
     code = code[9:] if code[0:9] == "```python" else code
     code = code[:-3] if code[-3:] == "```" else code
+    return code
     return run_python(code, None)
 
 
