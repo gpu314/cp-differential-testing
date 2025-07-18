@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const BACKEND_URL = "https://cp-differential-testing-backend.onrender.com";
+const BACKEND_URL = "https://cp-differential-testing-backend-docker.onrender.com";
 
 const languages = ["python", "java", "cpp"];
 
