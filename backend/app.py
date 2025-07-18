@@ -21,6 +21,7 @@ client = Groq(
 
 NUM_TESTS = 100
 
+
 def prompt_for_generate_test_case(specification):
     prompt = f"""Generate a Python function called `generate_test_case()` that uses the `random` module to generate a random input based on this input specification:
 
@@ -46,13 +47,12 @@ Only return the Python code (no explanations, no markdown). The function should 
 
     return response.choices[0].message.content
 
+
 def generate_test_case(code):
-    # if code[0:3] == "```":
-    #     code = code[3:]
-    # if code[-3:] == "```":
-    #     code = code[:-3]
-    # return run_python(code, None)
-    return code
+    code = code[9:] if code[0:9] == "```python" else code
+    code = code[:-3] if code[-3:] == "```" else code
+    return run_python(code, None)
+
 
 def run_python(code, input_str):
     with tempfile.NamedTemporaryFile("w+", suffix=".py", delete=False) as f:
@@ -69,9 +69,11 @@ def run_python(code, input_str):
     finally:
         os.remove(path)
 
+
 def java_class_name(code):
     match = re.search(r'public\s+class\s+([A-Za-z_][A-Za-z0-9_]*)', code)
     return match.group(1) if match else None
+
 
 def run_java(code, input_str):
     class_name = java_class_name(code)
@@ -197,6 +199,7 @@ def run_differential_test():
         return jsonify({"match": True, "message": f"All {NUM_TESTS} test cases matched!"})
     except Exception as e:
         return jsonify({"error": f"Server error {str(e)}"}), 500
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
