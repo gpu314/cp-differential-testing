@@ -47,6 +47,10 @@ Only return the Python code (no explanations, no markdown). The function should 
     return response.choices[0].message.content
 
 def generate_test_case(code):
+    if code[0:3] == "```":
+        code = code[3:]
+    if code[-3:] == "```":
+        code = code[:-3]
     return run_python(code, None)
 
 def run_python(code, input_str):
