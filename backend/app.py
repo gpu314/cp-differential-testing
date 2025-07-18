@@ -1,5 +1,4 @@
 import os
-import random
 import subprocess
 import tempfile
 import re
@@ -51,8 +50,8 @@ Only return the Python code (no explanations, no markdown). The function should 
 def generate_test_case(code):
     code = code[9:] if code[0:9] == "```python" else code
     code = code[:-3] if code[-3:] == "```" else code
-    return code
-    return run_python(code, None)
+    complete_code = f"""{code}\nprint({code}())"""
+    return run_python(complete_code, None)[0]
 
 
 def run_python(code, input_str):
