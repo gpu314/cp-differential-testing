@@ -14,12 +14,7 @@ client = Groq(
     api_key=os.environ.get("GROQ_API_KEY"),
 )
 
-# def generate_test_case():
-#     quarters = random.randint(1, 99)
-#     m1 = random.randint(0, 34)
-#     m2 = random.randint(0, 99)
-#     m3 = random.randint(0, 9)
-#     return f"{quarters}\n{m1}\n{m2}\n{m3}\n"
+NUM_TESTS = 100
 
 def prompt_for_generate_test_case(specification):
     prompt = f"""Generate a Python function called `generate_test_case()` that uses the `random` module to generate a random input based on this input specification:
