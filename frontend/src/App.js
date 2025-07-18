@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const BACKEND_URL = ProcessingInstruction.env.BACKEND_URL;
+const BACKEND_URL = "https://cp-differential-testing-backend.onrender.com";
 
 const languages = ["python", "java", "cpp"];
 
